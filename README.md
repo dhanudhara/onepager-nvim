@@ -1,3 +1,5 @@
+> This is a fully vibecoded proj: don't use it. Even the README.md is vibecoded!!!
+
 # onepager.nvim
 
 > **Note:** This is a vibecoded project built with AI assistance.
