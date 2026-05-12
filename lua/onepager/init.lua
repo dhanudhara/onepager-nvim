@@ -44,10 +44,13 @@ local function setup_buffer_boundary(bufnr, cols, rows)
           lines[#lines] = string.sub(last_line, 1, cols)
           vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
         end
-        if #lines > rows then
-          vim.api.nvim_buf_set_lines(bufnr, rows, -1, false, {})
-          vim.bo[bufnr].readonly = true
-          vim.notify("[OnePager] Rows full! Read-only.")
+        if #lines >= rows then
+          local target = rows - 1
+          if #lines > target then
+            vim.api.nvim_buf_set_lines(bufnr, target, -1, false, {})
+            vim.bo[bufnr].readonly = true
+            vim.notify("[OnePager] Rows full! Read-only.")
+          end
         end
       end,
     })
@@ -65,6 +68,10 @@ function M.setup()
       local bufnr = args.buf
       vim.bo[bufnr].filetype = "markdown"
       setup_buffer_boundary(bufnr, cols, rows)
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+      if #lines >= rows then
+        vim.bo[bufnr].readonly = true
+      end
       vim.notify(string.format("[OnePager] Bound to %d x %d (A4 @ 12pt)", cols, rows))
     end,
   })
