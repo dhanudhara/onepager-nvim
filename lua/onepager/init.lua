@@ -61,12 +61,56 @@ function M.setup()
   local cols, rows = calculate_dimensions()
   local group = vim.api.nvim_create_augroup("OnePager", { clear = true })
 
+  vim.keymap.set("n", "p", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    if string.match(vim.buf.name(bufnr), "%.omd$") then
+      vim.cmd("normal! p")
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+      if #lines >= rows then
+        vim.cmd("normal! u")
+        vim.bo[bufnr].readonly = true
+        vim.notify("[OnePager] Rows full! Read-only.")
+      end
+      return
+    end
+    vim.cmd("normal! p")
+  end, { buffer = true })
+
+  vim.keymap.set("n", "P", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    if string.match(vim.buf.name(bufnr), "%.omd$") then
+      vim.cmd("normal! P")
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+      if #lines >= rows then
+        vim.cmd("normal! u")
+        vim.bo[bufnr].readonly = true
+        vim.notify("[OnePager] Rows full! Read-only.")
+      end
+      return
+    end
+    vim.cmd("normal! P")
+  end, { buffer = true })
+
+  vim.keymap.set("n", "gp", function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    if string.match(vim.buf.name(bufnr), "%.omd$") then
+      vim.cmd("normal! gp")
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+      if #lines >= rows then
+        vim.cmd("normal! u")
+        vim.bo[bufnr].readonly = true
+        vim.notify("[OnePager] Rows full! Read-only.")
+      end
+      return
+    end
+    vim.cmd("normal! gp")
+  end, { buffer = true })
+
   vim.api.nvim_create_autocmd({"BufReadPost", "BufNewFile"}, {
     group = group,
     pattern = "*.omd",
     callback = function(args)
       local bufnr = args.buf
-      vim.bo[bufnr].filetype = "markdown"
       setup_buffer_boundary(bufnr, cols, rows)
       local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
       if #lines >= rows then
