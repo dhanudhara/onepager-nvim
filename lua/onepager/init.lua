@@ -73,5 +73,4 @@ function M.setup()
 end
 
 M.setup()
-
-return {}
+return M
